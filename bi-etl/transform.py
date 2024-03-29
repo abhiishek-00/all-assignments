@@ -14,8 +14,10 @@ print(list(df.columns.values))
 # transform date & time to year, quarter, month, week, day & hour
 print(df['date'].values[0])
 print(df['time'].values[0])
-df.date = pd.to_datetime(df.date)
-df.time = pd.to_datetime(df.time, format="%H:%M:%S")
+df.date = pd.to_datetime(df.date, errors='coerce')
+df = df.dropna(subset=['date'])
+df.time = pd.to_datetime(df.time, format="%H:%M:%S", errors='coerce')
+df = df.dropna(subset=['time'])
 df['year'] = pd.DatetimeIndex(df['date']).year
 df['quarter'] = pd.PeriodIndex(df.date, freq='Q')
 df['month'] = df.date.apply(lambda x: x.strftime('%B-%Y')) 
