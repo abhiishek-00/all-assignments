@@ -13,7 +13,7 @@ fpOut.write("{}\n".format(header))
 
 for file in os.listdir(input_folder):
     if file.endswith(".log"):
-        print(file)
+        print("processing "+file)
         with open(os.path.join(input_folder, file), 'r') as f:
             lines = f.readlines()
             for line in lines:
