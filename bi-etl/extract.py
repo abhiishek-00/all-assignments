@@ -24,6 +24,6 @@ for file in os.listdir(input_folder):
                     #data.append(line)
                     #print(data)
 
-df = pd.read_csv('collated.log', sep='\s', engine='python')
-df.to_csv('collated.csv', index=None)
+df = pd.read_csv('collated.log', sep='\s', engine='python', on_bad_lines = 'warn')
+df.to_csv('extracted.csv', index=None)
 print(list(df.columns.values))
