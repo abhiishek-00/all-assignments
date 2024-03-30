@@ -7,7 +7,7 @@ dbvalues = {
 }
 
 tablename = 'projectetl'
-csv_file_path = 'transformed1.csv'
+csv_file_path = 'transformed.csv'
 
 # connect to DB
 connectionString = "host=localhost dbname=" + dbvalues['dbname'] + " user=" + dbvalues['user'] + " password=" + dbvalues['password']
