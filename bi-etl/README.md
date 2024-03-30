@@ -3,3 +3,5 @@
 3. install requirements.txt : ``` pip3 install -r requirements.txt ``` 
 4. run extract.py : ``` python3 extract.py ```  
 5. run transform.py : ``` python3 transform.py ``` 
+6. open load.py & change values of dbname, user & password under dbvalues
+7. run load.py : ``` python3 load.py ```
