@@ -1,0 +1,5 @@
+1. clone the project : '''git clone https://github.com/abhiishek-00/all-assignments.git'''
+2. open terminal here & go to bi-etl : '''cd bi-etl'''
+3. install requirements.txt : '''pip3 install -r requirements.txt'''
+4. run extract.py : '''python3 extract.py''' 
+5. run transform.py : '''python3 transform.py'''
