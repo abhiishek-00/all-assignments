@@ -1,11 +1,7 @@
-import os
-import csv
 import pandas as pd
 import numpy as np
-import requests
 import urllib.request, urllib.error
 import json
-from collections import defaultdict
 
 df = pd.read_csv('extracted.csv')
 
