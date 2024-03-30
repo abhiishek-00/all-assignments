@@ -3,7 +3,7 @@ import numpy as np
 import urllib.request, urllib.error
 import json
 
-df = pd.read_csv('extracted.csv')
+df = pd.read_csv('extracted1.csv')
 
 print(list(df.columns.values))
 
@@ -55,11 +55,13 @@ filetypes = []
 ostypes = []
 browsertypes = []
 l = 1
+ids = []
 # drop rows with empty values in column c-ip
 df['c-ip'].str.strip().replace('', np.nan, inplace=True)
 df.dropna(subset=['c-ip'], inplace=True)
 for index, row in df.iterrows():
    print("processing row number "+str(l))
+   ids.append(l)
    l = l + 1
    # transform IP into country & city 
    data = row['c-ip']
@@ -142,12 +144,13 @@ df['city'] = df_ips['city']
 # print(df['country'].values[11])
 # print(df['city'].values[11])   
 
-files = {'filetype' :filetypes, 'os' :ostypes, 'browser' :browsertypes}
-df_requests = pd.DataFrame(files, columns = ['filetype', 'os', 'browser'])
+files = {'filetype' :filetypes, 'os' :ostypes, 'browser' :browsertypes, 'id' :ids}
+df_requests = pd.DataFrame(files, columns = ['filetype', 'os', 'browser', 'id'])
 df['uri'] = df['cs-uri-stem']
 df['filetype'] = df_requests['filetype']
 df['os'] = df_requests['os']
 df['browser'] = df_requests['browser']
+df['id'] = df_requests['id']
 # print(df['cs-uri-stem'].values[12])
 # print(df['uri'].values[12])
 # print(df['filetype'].values[12])
@@ -163,6 +166,9 @@ df['timetaken'] = df['time-taken']
 
 # drop old columns from the dataframe
 df = df.drop(['date', 'time', 's-ip', 'cs-method', 'cs-uri-stem', 'cs-uri-query', 's-port', 'cs-username', 'c-ip', 'cs(User-Agent)', 'sc-status', 'sc-substatus', 'sc-win32-status', 'time-taken'], axis=1)
+# move id to 1st column
+first_column = df.pop('id') 
+df.insert(0, 'id', first_column)
 print(list(df.columns.values))
-df.to_csv('transformed.csv', index=None)
+df.to_csv('transformed1.csv', index=None)
 # print(list(df.columns.values))
