@@ -8,4 +8,9 @@
 
 
 #### docker
-1. docker-compose -f docker-compose.yaml up -d
+1. ```docker-compose -f docker-compose.yaml up -d```
+2. to check postgresSQL container
+   ```docker exec -it container-id-here bash```
+   ```psql -U reema ```
+   ```select * from eltclienttable where id = 'c2'; ```
+   ``` exit ```
