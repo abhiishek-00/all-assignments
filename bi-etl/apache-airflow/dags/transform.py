@@ -9,10 +9,10 @@ def getLocation(ip):
     try:
         res = urllib.request.urlopen(url)
     except urllib.error.HTTPError as e:
-        # Return code error (e.g. 404, 501, ...)
+        # return code error (e.g. 404, 501, ...)
         print('HTTPError: {}'.format(e.code))
     except urllib.error.URLError as e:
-        # Not an HTTP-specific error (e.g. connection refused)
+        # not an HTTP-specific error (e.g. connection refused)
         print('URLError: {}'.format(e.reason))
     else:
         # 200
@@ -36,7 +36,6 @@ def transformData():
     df['day'] = df.date.dt.day_name()
     df['hour'] = df.time.dt.hour
 
-    # print(df['c-ip'].values[11])
     ips = []
     countries = []
     cities = []
@@ -51,9 +50,7 @@ def transformData():
     dateids = []
     clientids = []
     requestids = []
-    # drop rows with empty values in column c-ip
-    df['c-ip'].str.strip().replace('', np.nan, inplace=True)
-    df.dropna(subset=['c-ip'], inplace=True)
+
     for index, row in df.iterrows():
         print("processing row number "+str(l))
         ids.append(l)
@@ -155,7 +152,7 @@ def transformData():
     # move id to 1st column
     first_column = df.pop('id') 
     df.insert(0, 'id', first_column)
-    print(list(df.columns.values))
+    print(df.head(1))
     df.to_csv('/opt/airflow/dags/transformed.csv', index=None)
 
     # create csvs for relational DB
@@ -168,10 +165,12 @@ def transformData():
     df_etldatetable['day'] = df['day']
     df_etldatetable['hour'] = df['hour']
     print(list(df_etldatetable.columns.values))
+    print(df_etldatetable.head(1))
     df_etldatetable.to_csv('/opt/airflow/dags/etldatetable.csv', index=None)
     locations = {'id': clientids, 'ip': ips, 'country': countries, 'city': cities}
     df_eltclienttable = pd.DataFrame(locations, columns = ['id', 'ip', 'country', 'city'])
     print(list(df_eltclienttable.columns.values))
+    print(df_eltclienttable.head(1))
     df_eltclienttable.to_csv('/opt/airflow/dags/eltclienttable.csv', index=None)
     files = {'id': requestids, 'filetype' :filetypes, 'os' :ostypes, 'browser' :browsertypes}
     df_etlrequesttable = pd.DataFrame(files, columns = ['id', 'filetype', 'os', 'browser'])
@@ -179,10 +178,12 @@ def transformData():
     second_column = df_etlrequesttable.pop('uri') 
     df_etlrequesttable.insert(1, 'uri', second_column)
     print(list(df_etlrequesttable.columns.values))
+    print(df_etlrequesttable.head(1))
     df_etlrequesttable.to_csv('/opt/airflow/dags/etlrequesttable.csv', index=None)
     df_etlmaintable = df.drop(['year', 'quarter', 'month', 'week', 'day', 'hour', 'ip', 'country', 'city', 'uri', 'filetype', 'os', 'browser'], axis=1)
     df_etlmaintable['dateid'] = df_etldatetable['id']
     df_etlmaintable['clientid'] = df_eltclienttable['id']
     df_etlmaintable['requestid'] = df_etlrequesttable['id']
     print(list(df_etlmaintable.columns.values))
+    print(df_etlmaintable.head(1))
     df_etlmaintable.to_csv('/opt/airflow/dags/etlmaintable.csv', index=None)
