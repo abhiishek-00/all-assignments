@@ -15,9 +15,9 @@ def loadTables(tablename, createQuery, csv_file_path, cur):
 
 def loadData():
     dbvalues = {
-        "dbname":"aktiw6",
-        "user":"aktiw6",
-        "password":"amex123"
+        "dbname":"reema",
+        "user":"reema",
+        "password":"reema123"
     }
 
     # connect to DB
