@@ -3,13 +3,11 @@ import numpy as np
 import urllib.request, urllib.error
 import json
 
-df = pd.read_csv('extracted1.csv')
+df = pd.read_csv('extracted.csv')
 
 print(list(df.columns.values))
 
 # transform date & time to year, quarter, month, week, day & hour
-# print(df['date'].values[0])
-# print(df['time'].values[0])
 df.date = pd.to_datetime(df.date, errors='coerce')
 df = df.dropna(subset=['date'])
 df.time = pd.to_datetime(df.time, format="%H:%M:%S", errors='coerce')
@@ -20,12 +18,6 @@ df['month'] = df.date.apply(lambda x: x.strftime('%B-%Y'))
 df['week'] = df['date'].dt.to_period('W-SAT').apply(lambda r: r.start_time).dt.date
 df['day'] = df.date.dt.day_name()
 df['hour'] = df.time.dt.hour
-# print(df['year'].values[0])
-# print(df['quarter'].values[0])
-# print(df['month'].values[0])
-# print(df['week'].values[0])
-# print(df['day'].values[0])
-# print(df['hour'].values[0])
 
 # get location from an IP using geolocation-db.com
 def getLocation(ip):
@@ -56,12 +48,18 @@ ostypes = []
 browsertypes = []
 l = 1
 ids = []
+dateids = []
+clientids = []
+requestids = []
 # drop rows with empty values in column c-ip
 df['c-ip'].str.strip().replace('', np.nan, inplace=True)
 df.dropna(subset=['c-ip'], inplace=True)
 for index, row in df.iterrows():
    print("processing row number "+str(l))
    ids.append(l)
+   dateids.append("d"+str(l))
+   clientids.append("c"+str(l))
+   requestids.append("r"+str(l))
    l = l + 1
    # transform IP into country & city 
    data = row['c-ip']
@@ -139,10 +137,7 @@ locations = {'ip': ips, 'country': countries, 'city': cities}
 df_ips = pd.DataFrame(locations, columns = ['ip', 'country', 'city'])
 df['ip'] = df_ips['ip']
 df['country'] = df_ips['country']
-df['city'] = df_ips['city']
-# print(df['ip'].values[11])
-# print(df['country'].values[11])
-# print(df['city'].values[11])   
+df['city'] = df_ips['city']  
 
 files = {'filetype' :filetypes, 'os' :ostypes, 'browser' :browsertypes, 'id' :ids}
 df_requests = pd.DataFrame(files, columns = ['filetype', 'os', 'browser', 'id'])
@@ -151,18 +146,9 @@ df['filetype'] = df_requests['filetype']
 df['os'] = df_requests['os']
 df['browser'] = df_requests['browser']
 df['id'] = df_requests['id']
-# print(df['cs-uri-stem'].values[12])
-# print(df['uri'].values[12])
-# print(df['filetype'].values[12])
-# print(df['cs(User-Agent)'].values[12])
-# print(df['os'].values[12])
-# print(df['browser'].values[12])
 
 df['statuscode'] = df['sc-status']
 df['timetaken'] = df['time-taken']
-# print(df['statuscode'].values[12])
-# print(df['timetaken'].values[12])
-# print(list(df.columns.values))
 
 # drop old columns from the dataframe
 df = df.drop(['date', 'time', 's-ip', 'cs-method', 'cs-uri-stem', 'cs-uri-query', 's-port', 'cs-username', 'c-ip', 'cs(User-Agent)', 'sc-status', 'sc-substatus', 'sc-win32-status', 'time-taken'], axis=1)
@@ -170,5 +156,33 @@ df = df.drop(['date', 'time', 's-ip', 'cs-method', 'cs-uri-stem', 'cs-uri-query'
 first_column = df.pop('id') 
 df.insert(0, 'id', first_column)
 print(list(df.columns.values))
-df.to_csv('transformed1.csv', index=None)
-# print(list(df.columns.values))
+df.to_csv('transformed.csv', index=None)
+
+# create csvs for relational DB
+dates = {'id': dateids}
+df_etldatetable = pd.DataFrame(dates, columns = ['id'])
+df_etldatetable['year'] = df['year']
+df_etldatetable['quarter'] = df['quarter']
+df_etldatetable['month'] = df['month']
+df_etldatetable['week'] = df['week']
+df_etldatetable['day'] = df['day']
+df_etldatetable['hour'] = df['hour']
+print(list(df_etldatetable.columns.values))
+df_etldatetable.to_csv('etldatetable.csv', index=None)
+locations = {'id': clientids, 'ip': ips, 'country': countries, 'city': cities}
+df_eltclienttable = pd.DataFrame(locations, columns = ['id', 'ip', 'country', 'city'])
+print(list(df_eltclienttable.columns.values))
+df_eltclienttable.to_csv('eltclienttable.csv', index=None)
+files = {'id': requestids, 'filetype' :filetypes, 'os' :ostypes, 'browser' :browsertypes}
+df_etlrequesttable = pd.DataFrame(files, columns = ['id', 'filetype', 'os', 'browser'])
+df_etlrequesttable['uri'] = df['uri']
+second_column = df_etlrequesttable.pop('uri') 
+df_etlrequesttable.insert(1, 'uri', second_column)
+print(list(df_etlrequesttable.columns.values))
+df_etlrequesttable.to_csv('etlrequesttable.csv', index=None)
+df_etlmaintable = df.drop(['year', 'quarter', 'month', 'week', 'day', 'hour', 'ip', 'country', 'city', 'uri', 'filetype', 'os', 'browser'], axis=1)
+df_etlmaintable['dateid'] = df_etldatetable['id']
+df_etlmaintable['clientid'] = df_eltclienttable['id']
+df_etlmaintable['requestid'] = df_etlrequesttable['id']
+print(list(df_etlmaintable.columns.values))
+df_etlmaintable.to_csv('etlmaintable.csv', index=None)
