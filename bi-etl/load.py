@@ -1,13 +1,23 @@
 import psycopg2
 
-dbvalues = {
-    "dbname":"",
-    "user":"",
-    "password":""
-}
+def loadTables(tablename, createQuery, csv_file_path, cur):
+    # drop table if exists
+    cur.execute('DROP TABLE IF EXISTS '+ tablename)
+    cur.execute(createQuery)
+    # copy data from csv to the table
+    copyQuery = f"""
+        COPY {tablename} FROM stdin 
+        DELIMITER as ','
+        CSV HEADER;
+    """
+    with open(csv_file_path, 'r') as f:
+        cur.copy_expert(sql=copyQuery, file=f)
 
-tablename = 'projectetl'
-csv_file_path = 'transformed.csv'
+dbvalues = {
+    "dbname":" ",
+    "user":" ",
+    "password":" "
+}
 
 # connect to DB
 connectionString = "host=localhost dbname=" + dbvalues['dbname'] + " user=" + dbvalues['user'] + " password=" + dbvalues['password']
@@ -15,47 +25,90 @@ conn = psycopg2.connect(connectionString)
 cur = conn.cursor()
 # set automatic commit to be true, so that each action is committed without having to call conn.commit() after each command
 conn.set_session(autocommit=True)
-#cur.execute('SELECT * FROM inventory')
-#print(cur.fetchone())
 
-# drop table if exists
-cur.execute('DROP TABLE IF EXISTS '+ tablename)
-# create table with columns & add id as a primary key
+# create table projectetl
+tablename = 'projectetl'
+csv_file_path = 'transformed.csv'
 createQuery = 'CREATE TABLE '+ tablename + "("
 createQuery += """
-    id int,
-    year int,
-    quarter text,
-    month text,
-    week date,
-    day text,
-    hour int,
-    ip text,
-    country text,
-    city text,
-    uri text,
-    filetype text,
-    os text,
-    browser text,
-    statuscode int,
-    timetaken int,
-    PRIMARY KEY (id)
-)
-"""
-cur.execute(createQuery)
-#cur.execute('SELECT * FROM projectetl')
+        id int,
+        year int,
+        quarter text,
+        month text,
+        week date,
+        day text,
+        hour int,
+        ip text,
+        country text,
+        city text,
+        uri text,
+        filetype text,
+        os text,
+        browser text,
+        statuscode int,
+        timetaken int,
+        PRIMARY KEY (id)
+    )
+    """
+loadTables(tablename, createQuery, csv_file_path, cur)
 
-# copy data from csv to the table
-copyQuery = f"""
-    COPY {tablename} FROM stdin 
-    DELIMITER as ','
-    CSV HEADER;
-"""
-with open(csv_file_path, 'r') as f:
-    cur.copy_expert(sql=copyQuery, file=f)
-#cur.execute('SELECT * FROM projectetl')
+# create relational tables
+tablename = 'etldatetable'
+csv_file_path = 'etldatetable.csv'
+createQuery = 'CREATE TABLE '+ tablename + "("
+createQuery += """
+        id text,
+        year int,
+        quarter text,
+        month text,
+        week date,
+        day text,
+        hour int,
+        PRIMARY KEY (id)
+    )
+    """
+loadTables(tablename, createQuery, csv_file_path, cur)
+tablename = 'eltclienttable'
+csv_file_path = 'eltclienttable.csv'
+createQuery = 'CREATE TABLE '+ tablename + "("
+createQuery += """
+        id text,
+        ip text,
+        country text,
+        city text,
+        PRIMARY KEY (id)
+    )
+    """
+loadTables(tablename, createQuery, csv_file_path, cur)
+tablename = 'etlrequesttable'
+csv_file_path = 'etlrequesttable.csv'
+createQuery = 'CREATE TABLE '+ tablename + "("
+createQuery += """
+        id text,
+        uri text,
+        filetype text,
+        os text,
+        browser text,
+        PRIMARY KEY (id)
+    )
+    """
+loadTables(tablename, createQuery, csv_file_path, cur)
+tablename = 'etlmaintable'
+csv_file_path = 'etlmaintable.csv'
+createQuery = 'CREATE TABLE '+ tablename + "("
+createQuery += """
+        id int,
+        statuscode int,
+        timetaken int,
+        dateid text references etldatetable(id),
+        clientid text references eltclienttable(id),
+        requestid text references etlrequesttable(id),
+        PRIMARY KEY (id)
+    )
+    """
+loadTables(tablename, createQuery, csv_file_path, cur)
 
-# Commit the changes and close the connection to the default database
+# commit the changes and close the connection to the default database
 conn.commit()
 cur.close()
 conn.close()
