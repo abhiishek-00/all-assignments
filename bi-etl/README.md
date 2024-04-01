@@ -1,3 +1,6 @@
+<b>Note: u_ex110119.log is corrupted. don't use it.</b>
+
+#### local
 1. clone the project : ``` git clone https://github.com/abhiishek-00/all-assignments.git ``` 
 2. open terminal here & go to bi-etl : ``` cd bi-etl ``` 
 3. install requirements.txt : ``` pip3 install -r requirements.txt ``` 
