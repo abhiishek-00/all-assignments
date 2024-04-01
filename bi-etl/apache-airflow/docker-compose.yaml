@@ -283,7 +283,7 @@ services:
     container_name: postgresql
     image: postgres:latest
     ports:
-    - "5432:5432"
+    - "5416:5432"
     environment:
       - POSTGRES_USER=reema
       - POSTGRES_PASSWORD=reema123
