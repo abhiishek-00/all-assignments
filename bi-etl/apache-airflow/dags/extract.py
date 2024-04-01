@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import numpy as np
 
 def extractData():
     data = []
@@ -21,7 +22,12 @@ def extractData():
                         fpOut.write("{}\n".format(line))
 
     df = pd.read_csv('/opt/airflow/dags/collated.log', sep='\s', engine='python', on_bad_lines = 'warn')
+    # remove rows having blank data
+    df['time-taken'].replace('', np.nan, inplace=True)
+    df.dropna(subset=['time-taken'], inplace=True)
+    # convert to int
+    df['sc-status'] = df['sc-status'].astype(int)
+    df['time-taken'] = df['time-taken'].astype(int)
     df.to_csv('/opt/airflow/dags/extracted.csv', index=None)
     print(list(df.columns.values))
-
-extractData()
+    print(df.head(2))
