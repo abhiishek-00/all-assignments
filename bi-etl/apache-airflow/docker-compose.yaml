@@ -285,9 +285,9 @@ services:
     ports:
     - "5432:5432"
     environment:
-      - POSTGRES_USER=aktiw6
-      - POSTGRES_PASSWORD=amex123
-      - POSTGRES_DB=aktiw6
+      - POSTGRES_USER=reema
+      - POSTGRES_PASSWORD=reema123
+      - POSTGRES_DB=reema
     volumes:
       - "./postgresql-data:/var/lib/postgresql/data"
       - "./dags:/opt/airflow/dags"
