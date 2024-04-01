@@ -2,7 +2,7 @@ import psycopg2
 
 def loadTables(tablename, createQuery, csv_file_path, cur):
     # drop table if exists
-    cur.execute('DROP TABLE IF EXISTS '+ tablename)
+    cur.execute('DROP TABLE IF EXISTS '+ tablename + ' cascade')
     cur.execute(createQuery)
     # copy data from csv to the table
     copyQuery = f"""
