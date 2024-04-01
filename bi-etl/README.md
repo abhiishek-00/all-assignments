@@ -5,3 +5,7 @@
 5. run transform.py : ``` python3 transform.py ``` 
 6. open load.py & change values of dbname, user & password under dbvalues
 7. run load.py : ``` python3 load.py ```
+
+
+#### docker
+1. docker-compose -f docker-compose.yaml up -d
