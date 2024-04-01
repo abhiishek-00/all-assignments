@@ -12,5 +12,5 @@
 2. to check postgresSQL container
    1. ```docker exec -it container-id-here bash```
    2.  ```psql -U reema ```
-   3.  ``select * from eltclienttable where id = 'c2'; ```
+   3.  ```select * from eltclienttable where id = 'c2'; ```
    4. ``` exit ```
