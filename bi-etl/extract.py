@@ -1,6 +1,5 @@
 import os
 import pandas as pd
-#from transform import transform_data
 
 data = []
 input_folder = './logs'
@@ -19,9 +18,6 @@ for file in os.listdir(input_folder):
                 line = line.rstrip()
                 if not("#Software" in line or "#Version" in line or "#Date" in line or "#Fields" in line or "/robots.txt" in line):
                     fpOut.write("{}\n".format(line))
-                    #print(line)
-                    #data.append(line)
-                    #print(data)
 
 df = pd.read_csv('collated.log', sep='\s', engine='python', on_bad_lines = 'warn')
 df.to_csv('extracted.csv', index=None)
