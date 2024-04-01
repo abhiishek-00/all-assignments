@@ -1,5 +1,4 @@
 import os
-import csv
 import pandas as pd
 #from transform import transform_data
 
@@ -18,7 +17,7 @@ for file in os.listdir(input_folder):
             lines = f.readlines()
             for line in lines:
                 line = line.rstrip()
-                if not("#Software" in line or "#Version" in line or "#Date" in line or "#Fields" in line):
+                if not("#Software" in line or "#Version" in line or "#Date" in line or "#Fields" in line or "/robots.txt" in line):
                     fpOut.write("{}\n".format(line))
                     #print(line)
                     #data.append(line)
