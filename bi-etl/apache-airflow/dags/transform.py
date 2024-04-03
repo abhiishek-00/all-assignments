@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import urllib.request, urllib.error
 import json
+import os
 
 # get location from an IP using geolocation-db.com
 def getLocation(ip):
@@ -187,3 +188,9 @@ def transformData():
     print(list(df_etlmaintable.columns.values))
     print(df_etlmaintable.head(1))
     df_etlmaintable.to_csv('/opt/airflow/dags/etlmaintable.csv', index=None)
+
+def checkIfTransformCSVPresent():
+    if os.path.isfile('/opt/airflow/dags/transformed.csv'):
+        return True
+    else:
+        transformData()
