@@ -8,7 +8,6 @@ from extract import extractData
 from transform import transformData
 from load import loadData
 from pendulum import datetime, duration
-from transform import checkIfTransformCSVPresent
 
 # install dependencies
 def installDependencies():
@@ -48,7 +47,7 @@ extract_data = PythonOperator(task_id='extract_data',
                      python_callable=extractData,
                      dag=logs_etl_dag)
 transform_data = PythonOperator(task_id='transform_data',
-                       python_callable=checkIfTransformCSVPresent,
+                       python_callable=transformData,
                        dag=logs_etl_dag)
 load_data = PythonOperator(task_id='load_data',
                        python_callable=loadData,
