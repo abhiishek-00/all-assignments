@@ -20,6 +20,6 @@
 
 
 #### installing tableau postgreSQL driver
-https://jdbc.postgresql.org/download/postgresql-42.7.3.jar
-cd ~/Library/Tableau/Drivers
-cp ~/Downloads/postgresql-42.7.3.jar .
+1. https://jdbc.postgresql.org/download/postgresql-42.7.3.jar
+2. cd ~/Library/Tableau/Drivers
+3. cp ~/Downloads/postgresql-42.7.3.jar .
