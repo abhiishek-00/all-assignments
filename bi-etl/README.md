@@ -17,3 +17,9 @@
    2.  ```psql -U reema ```
    3.  ```select * from eltclienttable where id = 'c2'; ```
    4. ``` exit ```
+
+
+#### installing tableau postgreSQL driver
+https://jdbc.postgresql.org/download/postgresql-42.7.3.jar
+cd ~/Library/Tableau/Drivers
+cp ~/Downloads/postgresql-42.7.3.jar .
