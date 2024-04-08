@@ -1,0 +1,320 @@
+•	Introduction, set out the task
+•	Described how it was done ,
+•	Clearly describes problems in data
+•	Appropriate tools used
+•	Used  Relation staging tables
+•	Used appropriate dimension tables
+•	Managed Geo Location
+•	Handled Robots.txt
+•	Appropriate visualizations
+•	Innovation, did something new, interesting different.
+•	Technical presentation (correct technical level, )
+•	Presentation style (clear, easy to understand)
+
+
+Introduction, set out the task
+---------------------------------------------------------------------
+The task was to read Internet log files into a data warehouse and be able to point a data visualizer at it to produce analytical graphs.
+The ask was to use apache airflow to set up ETL pipeline & consequently load the tarnsformed data into a set of dimension tables and one (or more) fact table(s) that are held in a relational database engine.
+Finally, we have been asked to point a visualisation tool at the data & generate graphs & charts.
+
+Specific instructions-
+1. turn client ip into geolocation (city & country) using a geolocation service.
+2. filter out requests asking for robots.txt    
+
+
+Described how it was done
+-------------------------------------------------------------------
+A. ETL pipeline
+Python was used to extract, transform & load data to PostgreSQL DB via Apache airflow.
+
+1. extract.py
+	i. first, all the log files (.log) were read line by line & lines containing below data were filtered
+		a. anything starting with #Software, #Version, #Date or #Fields
+		b. anything /robots.txt
+		c. any blank line
+
+    ii. resultant data was written in an output file (collated.log) with header values (date time s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status time-taken) taken from the log files
+
+    iii. collated.log is read into a panda dataframe. at this step line with columns greater than 14 were removed.
+
+    iv. from the dataframe removed rows with null values for column time-taken
+
+    v. since dataframe was converting int to float, sc-status & time-taken were converted back to int
+
+    vi. dataframe is converted into a csv file named extracted.csv
+
+2. transform.py
+	i. wrote a method (getLocation) to extract city & country from IP by calling API https://geolocation-db.com/jsonp/{ip}
+
+	ii. extracted.csv is converted into a pandas dataframe & a staging table with below columns was created.
+	(date time s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status time-taken)
+
+	iii. first Date dimension table was worked upon
+		a. converted date & time to pandas datetime data structure
+		b. extracted year, quarter, month, week begining & day from the date
+		c. extracted hour from the time
+		d. create new columns for year, quarter, month, week, day & hour, and stored in the dataframe
+
+	iv. now transformed data to create Client dimension table
+		a. iterated through each row via a for loop 
+		b. extracted c-ip & called getLocation method to fetch country & city. here we have called geolocation API only for unique IPs.
+		how it was done- an array was maintained to store unique IPs after each iteration, as well as a dictionary was created to store city & country for an IP
+		c. the data is store in arrays & later created new columns for ip, city & country, and store in the dataframe
+
+	v. now started with creating Request dimension table
+		a. filetype is extracted from cs-uri-stem (ex- gif is extracted from /Darwin/underbargradient.gif)  
+		b. & from cs(User-Agent), extracted OS & browser values. here, since we were not able to find a regex pattern, we have used if-else block to look for some of the common OS & browser values (referred to sample graph & charts given in the assignment docx).
+		ex- OS looked for- Windows, Macintosh etc
+		ex- Browser looked for- Firefox, MSIE, Safari, Yandex, Netscape etc
+		c. the data is store in arrays & later created new columns for filetype, os & browser.
+
+	vi. for creating measure/fact table, copied existing columns time-taken & sc-status to timetaken & statuscode respectively
+
+	vii. similary added id columns to dimension tables which would act as a primary key later.
+	Date table - values in id column start with d1, d2...
+	Client table - values in id column start with c1, c2...
+	Request table - values in id column start with r1, r2...
+
+	viii. added a column id containing serial number (1,2,3...) to the measure table, which would act as a primary key during creating table in the postgreSQL
+	Also, created three new columns- dateid, clientid & requestid, which would be used as foreign keys during creation of relational tables in PostgreSQL
+
+	ix. finally created four csvs for each of the table using the dataframe
+	etldatetable.csv with columns - id, year, quarter, month, week, day, hour
+	eltclienttable.csv with columns- id, ip, country, city
+	etlrequesttable.csv with columns- id, filetype, os , browser
+	etlmaintable.csv with columns- id, statuscode, timetaken, dateid, clientid, requestid
+
+3. load.py
+	i. connection to PostgreSQL was established using psycopg2 library
+
+	ii. create 4 relational tables. below are the names & schema.
+		etldatetable (Date dimension table)
+		    id text,
+            year int,
+            quarter text,
+            month text,
+            week date,
+            day text,
+            hour int,
+            PRIMARY KEY (id)
+
+        eltclienttable (Client dimension table)
+        	id text,
+            ip text,
+            country text,
+            city text,
+            PRIMARY KEY (id)
+
+        etlrequesttable (Request dimension table)
+            id text,
+            uri text,
+            filetype text,
+            os text,
+            browser text,
+            PRIMARY KEY (id)
+
+        etlmaintable (Measure table)
+            id int,
+            statuscode int,
+            timetaken int,
+            dateid text references etldatetable(id),
+            clientid text references eltclienttable(id),
+            requestid text references etlrequesttable(id),
+            PRIMARY KEY (id)
+
+    iii. in all the tables, data is loaded from the respective csvs created in the previous step (transform.py)
+
+4. elt-pipeline.py (DAG for airflow)
+	i. created a DAG (logs-etl) & defined below parameters.
+		max_active_runs=1 (meaning- only one job will run at a time)
+		start_date=datetime(2024,4,1)
+		catchup=False (,meaning- since start date was set as April 1st, so in case airflow starts on April 9th, jobs scheduled for previous days will not be run)
+		"retries": 3 (meaning- each task will be retried for 3 times)
+		"retry_delay": duration(seconds=60)
+		"retry_exponential_backoff": True (meaning- with each retry delay time will increase by 60s)
+		"max_retry_delay": duration(hours=2)
+
+	ii. six tasks were defined.
+		a. start_pipeline : a simple python method called which prints the string "start the pipeline"
+
+		b. install_dependencies : a python method is called which will install all the libraries being used in the project (numpy, psycopg2, pandas)
+
+		c. extract_data : extract.py is wrapped in a method which is being called here
+
+		d. transform_data : transform.py is wrapped in a method which is being called here
+
+		e. load_data : load.py is wrapped in a method which is being called here
+
+		f. end_pipeline : a simple python method called which prints the string "end the pipeline"
+
+	iii. flow is defined as-
+	start_pipeline >> install_dependencies >> extract_data >> transform_data >> load_data >> end_pipeline
+
+5. the same docker-compose.yaml which is provide by Apache airflow is being used, except for the below addition. A postgreSQL service is being defined. here postgreSQL db is running on 5432 inside the container, while forwarded to 5416 to be used by local machine. so, localhost:5416 is the URL to which Tableau would be pointed. 
+	postgres-sql-db:
+    container_name: postgresql
+    image: postgres:latest
+    ports:
+    - "5416:5432"
+    environment:
+      - POSTGRES_USER=reema
+      - POSTGRES_PASSWORD=reema
+      - POSTGRES_DB=reema123
+    volumes:
+      - "./postgresql-data:/var/lib/postgresql/data"
+      - "./dags:/opt/airflow/dags" 
+
+
+B. Visualization
+	1. Tableau is being used to create charts & graphs
+	2. it is pointed to postgres-sql-db container of airflow (localhost:5416)
+	3. following charts & graphs were prepared.
+	<show the tableau here>
+
+
+Clearly describes problems in data
+--------------------------------------------------------------------
+1. since 14 headers were given in the log files, so only rows having 14 columns were considered. 
+rows with 16 columns are filtered out.
+
+2. since no pattern was found for extracting OS & browser details, if-else block was used. shown below.
+       # transform cs(User-Agent) to OS
+        data2 = row['cs(User-Agent)']
+        if 'Windows' in data2:
+                ostypes.append('Windows')
+        elif 'Macintosh' in data2:
+            ostypes.append('Macintosh')
+        elif 'yandex' in data2 or 'crawler' in data2 or 'yahoo' in data2 or 'baidu' in data2 or 'bot' in data2:
+            ostypes.append('Known robots')
+        elif data2 == '-': 
+            ostypes.append('OS unknown')
+        else:
+            ostypes.append('Other')
+
+       # transform cs(User-Agent) to browser
+        if 'Firefox' in data2:
+            browsertypes.append('Firefox')
+        elif 'MSIE' in data2:
+            browsertypes.append('MSIE')
+        elif 'Safari' in data2:
+            browsertypes.append('Safari')
+        elif 'Yandex' in data2:
+            browsertypes.append('Yandex')
+        elif 'Baiduspider' in data2:
+            browsertypes.append('Baiduspider')
+        elif 'msnbot' in data2:
+            browsertypes.append('msnbot')
+        elif 'Netscape' in data2:
+            browsertypes.append('Netscape')
+        elif 'Sogou' in data2:
+            browsertypes.append('Sogou')
+        elif 'panscient' in data2:
+            browsertypes.append('panscient')
+        else:
+            browsertypes.append('Other')
+
+3. file u_ex110119.log was creating problem during creating dataframes/csvs, so it was eventually ignored.
+
+4. rows with null values in the column time-taken were filtered out, since they creating problems during conversion to pandas datetime data structure.
+
+
+Appropriate tools used
+---------------------------------------------------
+1. Entire code is written in Python. & Pandas is used for easy manipulation of data.
+2. Apache airflow is used to schedule ETL pipeline & load data to postgreSQL
+3. PostgreSQL is used to store relational tables.
+4. Tableau (pointed to PostgreSQL) is used for creating visualization.
+5. Docker is used to containerised everything. & entire pipeline is running in Docker. 
+
+
+
+Used  Relation staging tables
+---------------------------------------------------
+In extract.py staging table is created with below columns.
+date time s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs(User-Agent) sc-status sc-substatus sc-win32-status time-taken
+
+
+
+Used appropriate dimension tables
+------------------------------------------
+Corresponding to my sun model, following relational tables were created.
+
+		etldatetable (Date dimension table)
+		    id text,
+            year int,
+            quarter text,
+            month text,
+            week date,
+            day text,
+            hour int,
+            PRIMARY KEY (id)
+
+        eltclienttable (Client dimension table)
+        	id text,
+            ip text,
+            country text,
+            city text,
+            PRIMARY KEY (id)
+
+        etlrequesttable (Request dimension table)
+            id text,
+            uri text,
+            filetype text,
+            os text,
+            browser text,
+            PRIMARY KEY (id)
+
+        etlmaintable (Measure table)
+            id int,
+            statuscode int,
+            timetaken int,
+            dateid text references etldatetable(id),
+            clientid text references eltclienttable(id),
+            requestid text references etlrequesttable(id),
+            PRIMARY KEY (id)
+
+
+
+Managed Geo Location
+-----------------------------
+https://geolocation-db.com/jsonp/{ip} is being used here to extract city & country from an IP
+
+
+
+Handled Robots.txt
+-----------------------------
+lines containing robots.txt were filtered in the extract.py. code snippet is below.
+
+                for line in lines:
+                    line = line.rstrip()
+                    if not("#Software" in line or "#Version" in line or "#Date" in line or "#Fields" in line or "/robots.txt" in line):
+                        fpOut.write("{}\n".format(line))
+
+
+
+Appropriate visualizations
+-------------------------------
+Tableau is used to create pie charts, histograms etc
+
+
+
+Innovation, did something new, interesting different.
+----------------------------------------------------
+1. called geolocation API only for unique IPs, thus saving tens of thousands of unncessary calls.
+
+2. in DAG, following parameters were used-
+	                     max_active_runs=1,
+                         catchup=False,
+                         default_args={
+                                "retries": 3,
+                                "retry_delay": duration(seconds=60),
+                                "retry_exponential_backoff": True,
+                                "max_retry_delay": duration(hours=2),
+                                }
+
+3. pandas dataframe is used for better handling of data & optimization, instead of reiterating to csv rows each & every time.
+
+4. for each of the dimension tables & measure table, at first a csv is created. & which is leveraged to copy data in bulk to postgreSQL instead of reiterating to csv rows.
+
+
