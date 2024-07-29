@@ -1,0 +1,193 @@
+{
+    "status": 200,
+    "message": "Success",
+    "data": [
+        {
+            "id": "123456789",
+            "name": "Enterprise Login",
+            "state": {},
+            "children": [
+                {
+                    "id": "web_123",
+                    "name": "Web",
+                    "state": {
+                        "ipc1": "true",
+                        "ipc2": "false",
+                        "ipc2r2": "NA"
+                    },
+                    "children": [
+                        {
+                            "id": "mfapod_123",
+                            "name": "MFA POD",
+                            "state": {
+                                "ipc1": "true",
+                                "ipc2": "false",
+                                "ipc2r2": "NA"
+                            },
+                            "children": [
+                                {
+                                    "id": "cbis23_123",
+                                    "name": "CBIS-23",
+                                    "state": {
+                                        "ipc1": "true",
+                                        "ipc2": "false",
+                                        "ipc2r2": "NA"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "mobile_123",
+                    "name": "Mobile",
+                    "state": {
+                        "ipc1": "true",
+                        "ipc2": "false",
+                        "ipc2r2": "NA"
+                    },
+                    "children": [
+                        {
+                            "id": "mfapoa_123",
+                            "name": "MFA POA",
+                            "state": {
+                                "ipc1": "true",
+                                "ipc2": "false",
+                                "ipc2r2": "NA"
+                            },
+                            "children": [
+                                {
+                                    "id": "redis_123",
+                                    "name": "Redis",
+                                    "state": {
+                                        "ipc1": "true",
+                                        "ipc2": "false",
+                                        "ipc2r2": "NA"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "id": "mfappp_123",
+                            "name": "MFA PPP",
+                            "state": {
+                                "ipc1": "true",
+                                "ipc2": "false",
+                                "ipc2r2": "NA"
+                            },
+                            "children": [
+                                {
+                                    "id": "tokenizer_123",
+                                    "name": "Tokenizer",
+                                    "state": {
+                                        "ipc1": "true",
+                                        "ipc2": "false",
+                                        "ipc2r2": "NA"
+                                    },
+                                    "children": [
+                                        {
+                                            "id": "redis_123",
+                                            "name": "Redis",
+                                            "state": {
+                                                "ipc1": "true",
+                                                "ipc2": "false",
+                                                "ipc2r2": "NA"
+                                            }
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "id": "mfapod_123",
+                            "name": "MFA POD",
+                            "state": {
+                                "ipc1": "true",
+                                "ipc2": "false",
+                                "ipc2r2": "NA"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "id": "cbis_123",
+                    "name": "CBIS",
+                    "state": {
+                        "ipc1": "true",
+                        "ipc2": "false",
+                        "ipc2r2": "NA"
+                    },
+                    "children": [
+                        {
+                            "id": "verf_123",
+                            "name": "Verf",
+                            "state": {
+                                "ipc1": "true",
+                                "ipc2": "false",
+                                "ipc2r2": "NA"
+                            }
+                        },
+                        {
+                            "id": "risk_123",
+                            "name": "Risk Dispatcher",
+                            "state": {
+                                "ipc1": "true",
+                                "ipc2": "false",
+                                "ipc2r2": "NA"
+                            }
+                        },
+                        {
+                            "id": "push_123",
+                            "name": "Push AuthN - PUSH Delivery",
+                            "state": {
+                                "ipc1": "true",
+                                "ipc2": "false",
+                                "ipc2r2": "NA"
+                            },
+                            "children": [
+                                {
+                                    "id": "agentb123_123",
+                                    "name": "Agent Binding",
+                                    "state": {
+                                        "ipc1": "true",
+                                        "ipc2": "false",
+                                        "ipc2r2": "NA"
+                                    }
+                                },
+                                {
+                                    "id": "dss_123",
+                                    "name": "DSS",
+                                    "state": {
+                                        "ipc1": "true",
+                                        "ipc2": "false",
+                                        "ipc2r2": "NA"
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "id": "mfadb_123",
+                            "name": "MFA DB",
+                            "state": {
+                                "ipc1": "true",
+                                "ipc2": "false",
+                                "ipc2r2": "NA"
+                            },
+                            "children": [
+                                {
+                                    "id": "risk_123",
+                                    "name": "Risk Dispatcher",
+                                    "state": {
+                                        "ipc1": "true",
+                                        "ipc2": "false",
+                                        "ipc2r2": "NA"
+                                    }
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
