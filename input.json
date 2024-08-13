@@ -1,263 +1,186 @@
-{
-    "application_name": "Enterprise Login",
-    "car_id": "123456789",
-    "node_details": [
-        {
-            "node_name": "Web",
-            "node_id": "web_123",
-            "parent_id": "123456789",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.8.141.125",
-                "port": 443
-            },
-            "ipc2": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "MFA POD",
-            "node_id": "mfapod_123",
-            "parent_id": "web_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "CBIS-23",
-            "node_id": "cbis23_123",
-            "parent_id": "mfapod_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "Mobile",
-            "node_id": "mobile_123",
-            "parent_id": "123456789",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "MFA POA",
-            "node_id": "mfapoa_123",
-            "parent_id": "mobile_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "Redis",
-            "node_id": "redis_123",
-            "parent_id": "mfapoa_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "MFA PPP",
-            "node_id": "mfappp_123",
-            "parent_id": "mobile_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "Tokenizer",
-            "node_id": "tokenizer_123",
-            "parent_id": "mfappp_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "Redis",
-            "node_id": "redis_123",
-            "parent_id": "tokenizer_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "MFA POD",
-            "node_id": "mfapod_123",
-            "parent_id": "mobile_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "CBIS",
-            "node_id": "cbis_123",
-            "parent_id": "123456789",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "Verf",
-            "node_id": "verf_123",
-            "parent_id": "cbis_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "Risk Dispatcher",
-            "node_id": "risk_123",
-            "parent_id": "cbis_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "Push AuthN",
-            "node_id": "push_123",
-            "parent_id": "cbis_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "Agent Binding",
-            "node_id": "agentb123_123",
-            "parent_id": "push_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "DSS",
-            "node_id": "dss_123",
-            "parent_id": "push_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "MFA DB",
-            "node_id": "mfadb_123",
-            "parent_id": "cbis_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        },
-        {
-            "node_name": "Risk Dispatcher",
-            "node_id": "risk_123",
-            "parent_id": "mfadb_123",
-            "is_critical": true,
-            "ipc1": {
-                "f5": "phx-dc1ecpgtm1a.phx.aexp.com",
-                "gtm": "enterpriseidentitysreportal.igdha-ecp.aexp.com",
-                "ip": "10.34.131.77",
-                "port": 443
-            },
-            "ipc2": {},
-            "ipc2r2": {}
-        }
-    ]
-}
+application_name: Enterprise Gateways
+node_details:
+  - node_name: Web
+    depends_on: Enterprise Gateways
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.8.141.125
+      port: 443
+    ipc2:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2r2: {}
+  - node_name: MFA POD
+    depends_on: Web
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: CBIS-23
+    depends_on: MFA POD
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: Mobile
+    depends_on: Enterprise Gateways
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: MFA POA
+    depends_on: Mobile
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: Redis
+    depends_on: MFA POA
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: MFA PPP
+    depends_on: Mobile
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: Tokenizer
+    depends_on: MFA PPP
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: Redis
+    depends_on: Tokenizer
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: MFA POD
+    depends_on: Mobile
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: CBIS
+    depends_on: Enterprise Gateways
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: Verf
+    depends_on: CBIS
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: Risk Dispatcher
+    depends_on: CBIS
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: Push AuthN
+    depends_on: CBIS
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: Agent Binding
+    depends_on: Push AuthN
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: DSS
+    depends_on: Push AuthN
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: MFA DB
+    depends_on: CBIS
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
+  - node_name: Risk Dispatcher
+    depends_on: MFA DB
+    is_critical: true
+    ipc1:
+      f5: phx-dc1ecpgtm1a.phx.aexp.com
+      gtm: enterpriseidentitysreportal.igdha-ecp.aexp.com
+      ip: 10.34.131.77
+      port: 443
+    ipc2: {}
+    ipc2r2: {}
