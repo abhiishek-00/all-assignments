@@ -22,7 +22,7 @@ type NodeDetail struct {
 }
 
 type InputYAML struct {
-	ApplicationName string      `yaml:"application_name"`
+	ApplicationName string       `yaml:"application_name"`
 	NodeDetails     []NodeDetail `yaml:"node_details"`
 }
 
@@ -43,14 +43,16 @@ func main() {
 	// Create a map to store node_name to node_id mapping
 	nodeIDMap := make(map[string]string)
 
+	// Generate a UUID for the application name (root node)
+	rootUUID := uuid.New().String()
+	nodeIDMap[inputData.ApplicationName] = rootUUID
+
 	// Iterate over each node and generate UUIDs for node_id and parent_id
 	for i, node := range inputData.NodeDetails {
-		// Check if the node_name already has a generated UUID
+		// Generate or reuse a UUID for the node_id
 		if nodeID, exists := nodeIDMap[node.NodeName]; exists {
-			// Use the existing UUID for node_id
 			inputData.NodeDetails[i].NodeID = nodeID
 		} else {
-			// Generate a new UUID for this node_name and store it in the map
 			nodeUUID := uuid.New().String()
 			nodeIDMap[node.NodeName] = nodeUUID
 			inputData.NodeDetails[i].NodeID = nodeUUID
@@ -59,6 +61,8 @@ func main() {
 		// Set the parent_id based on the depends_on field
 		if parentID, exists := nodeIDMap[node.DependsOn]; exists {
 			inputData.NodeDetails[i].ParentID = parentID
+		} else if node.DependsOn == inputData.ApplicationName {
+			inputData.NodeDetails[i].ParentID = rootUUID
 		} else {
 			inputData.NodeDetails[i].ParentID = "" // No parent, or parent not yet processed
 		}
