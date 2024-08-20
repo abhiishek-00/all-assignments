@@ -17,8 +17,8 @@ type NodeDetail struct {
 	IPC1       map[string]interface{} `yaml:"ipc1"`
 	IPC2       map[string]interface{} `yaml:"ipc2"`
 	IPC2R2     map[string]interface{} `yaml:"ipc2r2"`
-	NodeID     string                 `yaml:"node_id"`
-	ParentID   string                 `yaml:"parent_id"`
+	NodeID     string                 `yaml:"node_id,omitempty"`
+	ParentID   string                 `yaml:"parent_id,omitempty"`
 }
 
 type InputYAML struct {
@@ -45,12 +45,18 @@ func main() {
 
 	// Iterate over each node and generate UUIDs for node_id and parent_id
 	for i, node := range inputData.NodeDetails {
-		// Generate node_id UUID
-		nodeUUID := uuid.New().String()
-		inputData.NodeDetails[i].NodeID = nodeUUID
-		nodeIDMap[node.NodeName] = nodeUUID
+		// Check if the node_name already has a generated UUID
+		if nodeID, exists := nodeIDMap[node.NodeName]; exists {
+			// Use the existing UUID for node_id
+			inputData.NodeDetails[i].NodeID = nodeID
+		} else {
+			// Generate a new UUID for this node_name and store it in the map
+			nodeUUID := uuid.New().String()
+			nodeIDMap[node.NodeName] = nodeUUID
+			inputData.NodeDetails[i].NodeID = nodeUUID
+		}
 
-		// Generate parent_id UUID based on depends_on field
+		// Set the parent_id based on the depends_on field
 		if parentID, exists := nodeIDMap[node.DependsOn]; exists {
 			inputData.NodeDetails[i].ParentID = parentID
 		} else {
