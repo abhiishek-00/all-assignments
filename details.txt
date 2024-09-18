@@ -9,3 +9,8 @@ requirements-
 	b. java_version- take value from step 4
 6. delete the clone directory
 7. run steps 1 to 6 concurrently & safely
+
+
+<java.version>8</java.version>
+
+languageVersion = JavaLanguageVersion.of(17) or if not present then use sourceCompatibility
