@@ -1,0 +1,11 @@
+please create a python as well as golang script for the below requirements
+requirements-
+1. take input as csv having repository metadata
+2. clone the repository
+3. check in the root directory if pom.xml or build.gradle is present or not
+4. read either pom.xml or build.gradle & find out the java version mentioned in the file
+5. create a new copy of the original csv & add two columns-
+	a. build_tool- maven if pom is present, gradle if build.gradle is present
+	b. java_version- take value from step 4
+6. delete the clone directory
+7. run steps 1 to 6 concurrently & safely
