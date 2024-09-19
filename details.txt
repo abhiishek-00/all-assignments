@@ -508,3 +508,105 @@ def main():
 if __name__ == "__main__":
     main()
 
+
+
+import os
+import csv
+import shutil
+from git import Repo
+import xml.etree.ElementTree as ET
+from concurrent.futures import ThreadPoolExecutor
+
+def clone_repo(repo_url, clone_dir):
+    try:
+        Repo.clone_from(repo_url, clone_dir)
+        return True
+    except Exception as e:
+        print(f"Error cloning repo {repo_url}: {e}")
+        return False
+
+def check_build_file(clone_dir):
+    pom_path = os.path.join(clone_dir, 'pom.xml')
+    gradle_path = os.path.join(clone_dir, 'build.gradle')
+    
+    if os.path.exists(pom_path):
+        return 'maven', pom_path
+    elif os.path.exists(gradle_path):
+        return 'gradle', gradle_path
+    return None, None
+
+def extract_java_version(build_file, build_tool):
+    java_version = "Unknown"
+    try:
+        if build_tool == 'maven':
+            tree = ET.parse(build_file)
+            root = tree.getroot()
+            namespaces = {'xmlns': 'http://maven.apache.org/POM/4.0.0'}
+            java_version_tag = root.find(".//xmlns:properties/xmlns:java.version", namespaces)
+            if java_version_tag is not None:
+                java_version = java_version_tag.text
+        elif build_tool == 'gradle':
+            with open(build_file, 'r') as f:
+                content = f.read()
+                if "JavaLanguageVersion.of(" in content:
+                    start = content.find("JavaLanguageVersion.of(") + len("JavaLanguageVersion.of(")
+                    end = content.find(")", start)
+                    java_version = content[start:end].strip()
+                elif "sourceCompatibility" in content:
+                    for line in content.splitlines():
+                        if 'sourceCompatibility' in line:
+                            java_version = line.split('=')[-1].strip().replace("'", "").replace('"', '')
+                            break
+    except Exception as e:
+        print(f"Error extracting Java version from {build_file}: {e}")
+    
+    return java_version
+
+def process_repo(row, writer, lock):
+    repo_name = row['repo_name']
+    repo_url = row['repo_url']
+    clone_dir = f'./clones/{repo_name}'
+    result_row = row.copy()
+
+    if clone_repo(repo_url, clone_dir):
+        build_tool, build_file = check_build_file(clone_dir)
+        if build_tool:
+            java_version = extract_java_version(build_file, build_tool)
+            result_row['build_tool'] = build_tool
+            result_row['java_version'] = java_version
+        else:
+            result_row['build_tool'] = 'N/A'
+            result_row['java_version'] = 'N/A'
+
+        shutil.rmtree(clone_dir)  # Remove the cloned directory
+    else:
+        result_row['build_tool'] = 'N/A'
+        result_row['java_version'] = 'N/A'
+
+    # Write the result to CSV file (thread-safe)
+    with lock:
+        writer.writerow(result_row)
+
+def main():
+    input_csv = 'repos.csv'
+    output_csv = 'repos_output.csv'
+
+    # Open the input CSV file
+    with open(input_csv, mode='r') as file:
+        reader = csv.DictReader(file)
+        rows = list(reader)
+
+    # Open the output CSV file in append mode
+    with open(output_csv, mode='w', newline='') as file:
+        fieldnames = ['repo_name', 'repo_url', 'build_tool', 'java_version']
+        writer = csv.DictWriter(file, fieldnames=fieldnames)
+        writer.writeheader()
+
+        lock = threading.Lock()
+
+        # Limiting to 25 threads
+        with ThreadPoolExecutor(max_workers=25) as executor:
+            futures = [executor.submit(process_repo, row, writer, lock) for row in rows]
+
+if __name__ == "__main__":
+    main()
