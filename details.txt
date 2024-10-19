@@ -653,3 +653,11 @@ webhook_created
 
 create_webhook -> pick rows webhook_created = false -> once webhook created, set it as true
 process_events -> pick rows sqi_processed = false & webhook_created = true, & just after picking set sqi_processed = true
+
+
+
+csv columns- id,name,created_at,updated_at,pushed_at,language,archived,disabled,topics,default_branch,private,clone_url
+
+table columns- delivery_id, inserted_at, repo_id, commit_sha_id, repo_name, payload, sqi_processed, webhook_created
+
+payload is jsonb with following keys- FullName, Url, DefaultBranch, CreatedAt, UpdatedAt, PushedAt, Language, Archived, Disabled, Topics, Private 
