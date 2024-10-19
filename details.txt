@@ -610,3 +610,46 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+
+
+
+golang scheduler-
+scheduler:
+
+process_events method
+
+1. on_peak = true && off_peak = false
+	pool db for rows with sqi_processed = false & webhook_created = true
+	read viper string/int for per_hour_rows & per_hour_batch
+	in an hour process only per_hour_rows & within that hour process batchwise (per_hour_batch)
+
+2. on_peak = false && off_peak = true
+	pool db for rows with sqi_processed = false & webhook_created = true
+	read viper string/int for processing_rows & batch_size
+	process only processing_rows batchwise (batch_size)
+
+3. on_peak = true && off_peak = true
+	if within on_peak window -> execute (1)
+	if not -> execute (2)
+
+same 3 points for create_webhook method, but create_webhook starts first, & process_events starts after 1st batch of create_webhook is completed 
+
+
+after each batch is processed check for latest viper values
+
+& if pause_events or pause_webhook flag (read from viper variables) = true, pause the respective method after completing the batch, & then keep pooling every 10 mins whether respective pause flag is false or still true
+
+
+table to pool rows-
+repo_id
+repo_name
+sqi_processed
+webhook_created
+
+create_webhook -> pick rows webhook_created = false -> once webhook created, set it as true
+process_events -> pick rows sqi_processed = false & webhook_created = true, & just after picking set sqi_processed = true
