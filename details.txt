@@ -660,4 +660,37 @@ csv columns- id,name,created_at,updated_at,pushed_at,language,archived,disabled,
 
 table columns- delivery_id, inserted_at, repo_id, commit_sha_id, repo_name, payload, sqi_processed, webhook_created
 
-payload is jsonb with following keys- FullName, Url, DefaultBranch, CreatedAt, UpdatedAt, PushedAt, Language, Archived, Disabled, Topics, Private 
+payload is jsonb with following keys- FullName, Url, DefaultBranch, CreatedAt, UpdatedAt, PushedAt, Language, Archived, Disabled, Topics, Private
+
+
+
+I have additional requirements for the scheduler you provided.
+There are two more methods-
+processPREvents - pooling PRTable & pick rows where sqi_processed = false
+processWorkflowEvents - pooling WorkflowTable & pick rows where sqi_processed = false
+These two methods should start concurrently along with processEvents methods
+
+To summarize, the scheduler has 4 methods-
+createWebhooks - start first
+processEvents, processPREvents & processWorkflowEvents - start concurrently once first batch of createWebhooks is done
+
+all 4 methods follow below 3 requirements-
+1. on_peak = true && off_peak = false
+	pool db for rows with sqi_processed = false & webhook_created = true
+	read viper string/int for per_hour_rows & per_hour_batch
+	in an hour process only per_hour_rows & within that hour process batchwise (per_hour_batch)
+2. on_peak = false && off_peak = true
+	pool db for rows with sqi_processed = false & webhook_created = true
+	read viper string/int for processing_rows & batch_size
+	process only processing_rows batchwise (batch_size)
+3. on_peak = true && off_peak = true
+	if within on_peak window -> execute (1)
+	if not -> execute (2)
+
+general requirements for all 4 methods-
+1. after each batch is processed check for latest viper values- for instance,
+	a. if pause_events or pause_webhook has been changed to false
+	b. if per_hour_rows or per_hour_batch has been changed, or
+	c. if processing_rows or batch_size has been changed
+2. & if pause_events (common for processEvents, processPREvents & processWorkflowEvents) or pause_webhook flag (read from viper variables) = true, pause the respective method after completing the batch, & then keep pooling every 10 mins whether respective pause flag is false or still true
+3. all 4 methods should be panic safe, so that scheduler doesn't crash in case of any panic whatsoever
